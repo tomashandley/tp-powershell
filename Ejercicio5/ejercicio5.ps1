@@ -1,3 +1,17 @@
+#################################################
+#			  Sistemas Operativos		            #
+#		Trabajo Práctico 5 - Ejericio 5		      #
+#		Nombre del Script: ejercicio5.ps1		   #
+#							                           #
+#				Integrantes:		                  #
+#       Di Tommaso, Giuliano     38695645		   #
+#       Handley, Tomas           39210894		   #
+#       Imperatori, Nicolas      38622912		   #
+#							                           #
+#		   Instancia de Entrega: Entrega		      #
+#							                           #
+#################################################
+
 <#
 .Synopsis
    Ejercicio 5
@@ -10,33 +24,22 @@
    ./ejercicio_3.ps1 log_movimiento.csv
 #>
 
+#Validaciones
+Param(
+    [Parameter(Mandatory = $true, ParameterSetName = "Procesos")]
+    [switch]
+    $procesos
+)
 
-Change this to suite your needs
-
-## Create an Timer instance
-$timer = New-Object Timers.Timer
-
-## Now setup the Timer instance to fire events
-$timer.Interval = 2000     # fire every 2s
-$timer.AutoReset = $false  # do not enable the event again after its been fired
-$timer.Enabled = $true
-
-## register your event
-## $args[0] Timer object
-## $args[1] Elapsed event properties
-Register-ObjectEvent -InputObject $timer -EventName Elapsed -SourceIdentifier Notepad  -Action {notepad.exe}
-
-
-
-switch($args[0]) {
-    Procesos {
-        echo (get-process).Count 
-      break; 
-    }Peso {echo "peso"
-      break; 
+#infinite loop for calling connect function  
+while(1) {
+    if($procesos) {
+        Write-Host "#### Cantidad de procesos corriendo ####"
+        $cantidadDeProcesos=(Get-Process).Count;
+        Write-Host "$cantidadDeProcesos"
+        Write-Host "########################################"
+    } else {
+        
     }
-
+    start-sleep -seconds 1
 }
-
-
-
