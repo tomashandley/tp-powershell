@@ -1,5 +1,5 @@
 #################################################
-#			Sistemas Operativos		            #       
+#			Sistemas Operativos		            #
 #		Trabajo Práctico 2 - Ejericio 4		    #
 #		Nombre del Script: ejercicio4.ps1		#
 #							                    #
@@ -11,6 +11,33 @@
 #		Instancia de Entrega: Entrega		    #
 #							                    #
 #################################################
+
+<#
+.SYNOPSIS
+El script permite comprimir un directorio, descomprimir un archivo .zip u obtener informacion sobre un archivo zip
+.DESCRIPTION
+Este script recibe el path del archivo .zip y el tipo de operacion a realizar sobre este, y dependiendo del 
+tipo de operacion es comprimir o descomprimir, tambien recibe otro parametro con el directorio a comprimir o donde
+descomprimir el archivo .zip:
+.PARAMETER PathZip
+    Path del archivo ZIP. Este parámetro se usará para cualquiera de los tres modos
+de operación del script.
+.PARAMETER Directorio
+    Solo válido para los modos de compresión y descompresión. Indica el directorio a
+comprimir o el destino de la descompresión del archivo ZIP.
+.PARAMETER Descomprimir
+    De tipo switch, indica que el modo de operación es "Descompresión".
+.PARAMETER Comprimir
+    De tipo switch, indica que el modo de operación es "Compresión".
+.PARAMETER Informar
+    De tipo switch, indica que el modo de operación es "Información".
+.EXAMPLE
+./ejercicio4.ps1 -Directorio "./mis archivos/" -PathZip ./salida.zip -Comprimir
+.EXAMPLE
+./ejercicio4.ps1 -Directorio "./salida/" -PathZip ./salida.zip -Descomprimir
+.EXAMPLE
+./ejercicio4.ps1 -PathZip ./salida.zip -Informar
+#>
 
 Param(
    [Parameter(Mandatory = $true)]
