@@ -50,52 +50,98 @@ Param(
 
    [Parameter(Mandatory = $false, ParameterSetName = "Tipo")]
    [Parameter(Mandatory = $false, ParameterSetName = "Directorio")]
+   [ValidateScript({-not ($comprimir -or $informar)})]
    [switch]
    $descomprimir,
 
    [Parameter(Mandatory = $false, ParameterSetName = "Tipo")]
    [Parameter(Mandatory = $false, ParameterSetName = "Directorio")]
+   [ValidateScript({-not ($descomprimir -or $informar)})]
    [switch]
    $comprimir,
 
    [Parameter(Mandatory = $false, ParameterSetName = "Tipo")]
+   [ValidateScript({-not ($comprimir -or $descomprimir)})]
    [switch]
    $informar
 )
 
-$pathSalida = [System.IO.Path]::GetDirectoryName("$pathZip")
-$pathSalida = Resolve-Path $pathSalida
-Write-Host $pathSalida
+function ValidarPathZip {
+    param (
+        [string]$pathZip,
+        [string]$nombreZip
+    )
+    #Write-Host "$pathZip/$nombreZip"
+    if((Test-Path "$pathZip/$nombreZip") -eq $false){
+        Write-Host "El archivo $pathZip/$nombreZip no existe"
+        exit
+    }
+}
 
+<#
+descomprimir
+pathzip: zip a descomprimir, tiene q existir
+directorio: donde descomprimir el zip, si no existe lo creo
+
+comprimir
+pathzip: nombre del zip q se va a crear, puede existir->verificar nombre en distino
+directorio: dir a comprimir, tiene q existir
+
+informar
+pathzip: zip del q mostrar, tiene q existir
+#>
+<#
+Write-Host "descomprimir: $descomprimir"
+Write-Host "informar: $informar"
+Write-Host "comprimir: $comprimir"
+#>
 $nombreZip = [System.IO.Path]::GetFileName("$pathZip")
-Write-Host $nombreZip
+#Write-Host $nombreZip
+
+$pathZip = [System.IO.Path]::GetDirectoryName("$pathZip")
+$pathZip = Resolve-Path $pathZip
+#Write-Host $pathZip
 
 if($descomprimir){
-    Write-Host "descomprimir"
+    #Write-Host "descomprimir"
+
+    ValidarPathZip "$pathZip" "$nombreZip"
+
     $directorioValido = Test-Path $directorio
     if($directorioValido -eq $false){
         New-Item -Path "$PSScriptRoot/" -Name "$directorio" -ItemType "directory"
     }
     $directorio = Resolve-Path $directorio
-    Write-Host $directorio
 
-    [System.IO.Compression.ZipFile]::ExtractToDirectory("$pathSalida/$nombreZip","$directorio")
+    [System.IO.Compression.ZipFile]::ExtractToDirectory("$pathZip/$nombreZip","$directorio")
+    Write-Host "La descompresion del archivo $pathZip/$nombreZip en $directorio se realizo correctamente"
 }
 elseif($comprimir){
-    Write-Host "comprimir"
+    #Write-Host "comprimir"
     $directorioValido = Test-Path $directorio
     if($directorioValido -eq $false){
         Write-Host "Error en parametro -Directorio, $directorio no existe el directorio a comprimir."
         exit
     }
     $directorio = Resolve-Path $directorio
-    Write-Host $directorio
+    #Write-Host $directorio
     
-    [System.IO.Compression.ZipFile]::CreateFromDirectory("$directorio", "$pathSalida/$nombreZip")
+    $testPath = test-path "$pathZip/$nombreZip"
+    while($testPath -eq $true){
+        $rnd = Get-Random -Minimum 1000 -Maximum 9999
+        $nombreSinExtension = [System.IO.Path]::GetFileNameWithoutExtension("$nombreZip")
+        $extension = [System.IO.Path]::GetExtension("$nombreZip")
+        $nombreZip = $nombreSinExtension + $rnd + $extension
+        $testPath = test-path "$pathZip/$nombreZip"
+    }
+
+    [System.IO.Compression.ZipFile]::CreateFromDirectory("$directorio", "$pathZip/$nombreZip")
+    Write-Host "El archivo $pathZip/$nombreZip se ha creado correctamente"
 }
 elseif($informar){
-    Write-Host "informar"
-    [System.IO.Compression.ZipFile]::OpenRead("$pathSalida/$nombreZip").Entries | Format-Table @{L='Nombre del archivo';E={$_.FullName}},
+    #Write-Host "informar"
+    ValidarPathZip "$pathZip" "$nombreZip"
+    [System.IO.Compression.ZipFile]::OpenRead("$pathZip/$nombreZip").Entries | Format-Table @{L='Nombre del archivo';E={$_.FullName}},
                                                                                                 @{L='Peso';E={$_.Length}},
                                                                                                 @{L='Relacion de compresion';E={$_.CompressedLength}}
 }
