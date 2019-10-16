@@ -18,7 +18,7 @@ El script permite comprimir un directorio, descomprimir un archivo .zip u obtene
 .DESCRIPTION
 Este script recibe el path del archivo .zip y el tipo de operacion a realizar sobre este, y dependiendo del 
 tipo de operacion es comprimir o descomprimir, tambien recibe otro parametro con el directorio a comprimir o donde
-descomprimir el archivo .zip:
+descomprimir el archivo .zip
 .PARAMETER PathZip
     Path del archivo ZIP. Este parámetro se usará para cualquiera de los tres modos
 de operación del script.
@@ -71,42 +71,21 @@ function ValidarPathZip {
         [string]$pathZip,
         [string]$nombreZip
     )
-    #Write-Host "$pathZip/$nombreZip"
     if((Test-Path "$pathZip/$nombreZip") -eq $false){
         Write-Host "El archivo $pathZip/$nombreZip no existe"
         exit
     }
 }
 
-<#
-descomprimir
-pathzip: zip a descomprimir, tiene q existir
-directorio: donde descomprimir el zip, si no existe lo creo
-
-comprimir
-pathzip: nombre del zip q se va a crear, puede existir->verificar nombre en distino
-directorio: dir a comprimir, tiene q existir
-
-informar
-pathzip: zip del q mostrar, tiene q existir
-#>
-<#
-Write-Host "descomprimir: $descomprimir"
-Write-Host "informar: $informar"
-Write-Host "comprimir: $comprimir"
-#>
 $nombreZip = [System.IO.Path]::GetFileName("$pathZip")
-#Write-Host $nombreZip
 
 $pathZip = [System.IO.Path]::GetDirectoryName("$pathZip")
-$pathZip = Resolve-Path $pathZip
-#Write-Host $pathZip
 
 if($descomprimir){
-    #Write-Host "descomprimir"
-
+    $pathZip = Resolve-Path $pathZip
     ValidarPathZip "$pathZip" "$nombreZip"
 
+    #si no existe creo el directorio donde se va a descomprimir
     $directorioValido = Test-Path $directorio
     if($directorioValido -eq $false){
         New-Item -Path "$PSScriptRoot/" -Name "$directorio" -ItemType "directory"
@@ -117,15 +96,22 @@ if($descomprimir){
     Write-Host "La descompresion del archivo $pathZip/$nombreZip en $directorio se realizo correctamente"
 }
 elseif($comprimir){
-    #Write-Host "comprimir"
-    $directorioValido = Test-Path $directorio
+    $directorioValido = Test-Path "$directorio"
+    #verifico que exista el directorio a comprimir
     if($directorioValido -eq $false){
         Write-Host "Error en parametro -Directorio, $directorio no existe el directorio a comprimir."
         exit
     }
     $directorio = Resolve-Path $directorio
-    #Write-Host $directorio
     
+    $pathZipValido = Test-Path "$pathZip"
+    #si no existe creo el directorio donde se va a guardar el zip
+    if($pathZipValido -eq $false){
+        New-Item -Path "$PSScriptRoot/" -Name "$pathZip" -ItemType "directory"
+    }
+    $pathZip = Resolve-Path $pathZip
+    
+    #si ya existe un zip con ese nombre en el directorio de destino, le agrego un numero random al final del nombre
     $testPath = test-path "$pathZip/$nombreZip"
     while($testPath -eq $true){
         $rnd = Get-Random -Minimum 1000 -Maximum 9999
@@ -139,7 +125,7 @@ elseif($comprimir){
     Write-Host "El archivo $pathZip/$nombreZip se ha creado correctamente"
 }
 elseif($informar){
-    #Write-Host "informar"
+    $pathZip = Resolve-Path $pathZip
     ValidarPathZip "$pathZip" "$nombreZip"
     [System.IO.Compression.ZipFile]::OpenRead("$pathZip/$nombreZip").Entries | Format-Table @{L='Nombre del archivo';E={$_.FullName}},
                                                                                                 @{L='Peso';E={$_.Length}},
