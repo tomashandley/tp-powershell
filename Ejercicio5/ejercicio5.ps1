@@ -43,14 +43,6 @@ Param(
    [Parameter(Mandatory=$true, ParameterSetName='Peso')]
    [string]$Directorio
 
-   # [Parameter(Mandatory = $true, ParameterSetName = "Peso")]
-   # [Parameter(Mandatory = $true, ParameterSetName = "Directorio")]
-   # [switch]
-   # $peso,
-
-   # [Parameter(Mandatory = $true, ParameterSetName = "Directorio")]
-   # [string]
-   # $directorio
 )
 
 #Loop infito que al realizar una operacion, queda esperando 3 segundos  

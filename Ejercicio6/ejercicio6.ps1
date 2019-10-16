@@ -85,7 +85,7 @@ if (!([string]::IsNullOrEmpty($suma))) {
     
     #Logica
     if ($null -eq (Get-Content $suma)) {
-        return "El archivo proveniento del parámetro -Suma está vacio"
+        return "El archivo proveniente del parámetro -Suma está vacio"
     }
     
     $control2 = $true;
@@ -93,7 +93,7 @@ if (!([string]::IsNullOrEmpty($suma))) {
     $filas2 = 0
     $columnas2 = 0
 
-    #Hago el parseo de los datos del archivo de entrada
+    #Hago el parseo de los datos del archivo de la segunda matriz
     foreach($line in Get-Content $suma) {
         $spliteado = $line.split("|");
         if($control2) {
@@ -106,6 +106,7 @@ if (!([string]::IsNullOrEmpty($suma))) {
         $filas2++; #Cuento las filas
     }
     
+    #Si las matrices no tienen el mismo ancho y el mismo largo, entonces no pueden sumarse
     if (($filas -eq $filas2) -and ($columnas -eq $columnas2)) {
         for($i=0; $i -lt $filas; $i++) {
             for($j=0; $j -lt $columnas; $j++) {
