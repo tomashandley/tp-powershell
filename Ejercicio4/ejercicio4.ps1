@@ -44,23 +44,21 @@ Param(
    [string]
    $pathZip,
 
-   [Parameter(Mandatory = $false, ParameterSetName = "Directorio")]
+   [Parameter(Mandatory = $true, ParameterSetName = "ComprimirDescomprimir")]
    [string]
    $directorio,
 
-   [Parameter(Mandatory = $false, ParameterSetName = "Tipo")]
-   [Parameter(Mandatory = $false, ParameterSetName = "Directorio")]
+   [Parameter(Mandatory = $false, ParameterSetName = "ComprimirDescomprimir")]
    [ValidateScript({-not ($comprimir -or $informar)})]
    [switch]
    $descomprimir,
 
-   [Parameter(Mandatory = $false, ParameterSetName = "Tipo")]
-   [Parameter(Mandatory = $false, ParameterSetName = "Directorio")]
+   [Parameter(Mandatory = $false, ParameterSetName = "ComprimirDescomprimir")]
    [ValidateScript({-not ($descomprimir -or $informar)})]
    [switch]
    $comprimir,
 
-   [Parameter(Mandatory = $false, ParameterSetName = "Tipo")]
+   [Parameter(Mandatory = $false, ParameterSetName = "Informar")]
    [ValidateScript({-not ($comprimir -or $descomprimir)})]
    [switch]
    $informar
