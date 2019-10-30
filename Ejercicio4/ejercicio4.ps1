@@ -8,7 +8,7 @@
 #         Handley, Tomas           39210894		#
 #         Imperatori, Nicolas      38622912		#
 #							                    #
-#		Instancia de Entrega: Entrega		    #
+#		Instancia de Entrega: Reentrega 1	    #
 #							                    #
 #################################################
 
@@ -126,6 +126,6 @@ elseif($informar){
     $pathZip = Resolve-Path $pathZip
     ValidarPathZip "$pathZip" "$nombreZip"
     [System.IO.Compression.ZipFile]::OpenRead("$pathZip/$nombreZip").Entries | Format-Table @{L='Nombre del archivo';E={$_.FullName}},
-                                                                                                @{L='Peso';E={$_.Length}},
-                                                                                                @{L='Relacion de compresion';E={$_.CompressedLength}}
+                                                                                                @{L='Peso';E={$_.CompressedLength}},
+                                                                                                @{L='Relacion de compresion';E={[math]::Round($_.CompressedLength/$_.Length,2)}}
 }
