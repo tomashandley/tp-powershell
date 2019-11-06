@@ -126,6 +126,5 @@ elseif($informar){
     $pathZip = Resolve-Path $pathZip
     ValidarPathZip "$pathZip" "$nombreZip"
     [System.IO.Compression.ZipFile]::OpenRead("$pathZip/$nombreZip").Entries | Format-Table @{L='Nombre del archivo';E={$_.FullName}},
-                                                                                                @{L='Peso';E={$_.CompressedLength}},
-                                                                                                @{L='Relacion de compresion';E={[math]::Round($_.CompressedLength/$_.Length,2)}}
+                                                                                            @{L='Relacion de compresion';E={[math]::Round($_.CompressedLength/$_.Length,2)}}
 }
