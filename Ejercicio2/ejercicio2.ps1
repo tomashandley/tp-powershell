@@ -28,32 +28,27 @@ Este script recibe un solo parametro, que indica la cantidad de instancias minim
 Param(
     [Parameter(Mandatory = $true, ParameterSetName = "Cantidad")]
     [int]
+    #Validacion para que $cantidad sea 2 o mayor
+    [ValidateRange(2,99999)]
     $cantidad
 )
 
 $procesos = @();
+$count=0;
+#Obtengo todos los procesos, una instancia de cada uno
+$procesos=Get-Process | Select-Object ProcessName -Unique;
 
-#Valido que el parametro sea mayor a 1
-if ($cantidad -le 1) {
-    Write-Error "Las instancias especificadas en el parametro -Cantidad debe ser mayor a 1"
-} else {
-    $count=0;
-    #Obtengo todos los procesos, una instancia de cada uno
-    $procesos=Get-Process | Select-Object ProcessName -Unique;
+Write-Host "#### Procesos con mas de $cantidad instancias ####"
 
-    Write-Host "#### Procesos con mas de $cantidad instancias ####"
-
-    foreach($proceso in $procesos) {
-        #Cuanto las instancias de cada uno de los procesos
-        $instances=(Get-Process -Name $proceso.ProcessName).Count
-        if($instances -gt $cantidad) {
-            $count=1;
-            Write-Host $proceso.ProcessName;
-        }
+foreach($proceso in $procesos) {
+    #Cuanto las instancias de cada uno de los procesos
+    $instances=(Get-Process -Name $proceso.ProcessName).Count
+    if($instances -gt $cantidad) {
+        $count=1;
+        Write-Host $proceso.ProcessName;
     }
+}
 
-    if($count -eq 0) {
-        Write-Host "No hay procesos con esa cantidad de instancias."
-    }
-
+if($count -eq 0) {
+    Write-Host "No hay procesos con esa cantidad de instancias."
 }
