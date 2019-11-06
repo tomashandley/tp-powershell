@@ -1,3 +1,17 @@
+#################################################
+#       Sistemas Operativos           #       
+#   Trabajo Práctico 2 - Ejericio 3       #
+#   Nombre del Script: ejercicio3.ps1   #
+#                                 #
+#       Integrantes:                #
+#       Di Tommaso, Giuliano     38695645   #
+#       Handley, Tomas           39210894   #
+#       Imperatori, Nicolas      38622912   #
+#                                 #
+#    Instancia de Entrega: Entrega        #
+#                                 #
+#################################################
+
 <#
 .Synopsis
    Movimiento de archivos
@@ -10,46 +24,48 @@
    ./ejercicio_3.ps1 log_movimiento.csv
 #>
 
+param(
+  [Parameter(Mandatory=$True,Position=1)]
+  [validateNotNullOrEmpty()]
+  [validatePattern('.*\.csv$')]
+  [string]$entrada,
+  [Parameter(Mandatory=$True,Position=2)]
+  [validateNotNullOrEmpty()]
+  [validatePattern('.*\.csv$')]
+  [string]$salida
+)
 
-if ( $args.Count -lt 1){
-    echo "Parametros insuficientes. Utilice Get-help para conocer funcionamiento"
+
+
+if( -not (Test-Path  "$entrada")){
+    echo "El archivo de entrada no existe"
     exit
 }
-else {
-    $extn = [IO.Path]::GetExtension($args[0])
-    if ( $extn -ne ".csv" ){
-        echo "El archivo de entrada debe ser un .csv"
-        exit
-    }else{
 
-        if( -not (Test-Path  $args[0])){
-            echo "El archivo de entrada no existe"
-            exit
-        }
-    }
+
+
+if ( -not  ( Test-Path "$salida" ) ) {
+    $headers = "" | select "archivo","fecha"
+    $headers | Export-csv -Path "$salida" -NoTypeInformation 
 }
 
-
-if ( -not  ( Test-Path log_salida.csv ) ) {
-    Add-Content -Path log_salida.csv  -Value '"archivo","fecha"'    
-}
-
-$cant_movimientos = 0;
-$archivo_entrada = $args[0]
-$headers_csv="origen,destino"
-foreach($line in Get-Content "${archivo_entrada}"){
-   if ( $line -ne  $headers_csv){
-        $fields = $line -split ","
-        $origen = $fields[0]
-        $destino = $fields[1]
+$cant_movimientos = 0
+foreach($line in Import-csv -Path "${entrada}" -Header 'origen','destino'){
+   $origen = $line.Origen
+   if ( $line.Origen -ne  "origen"){
+        $destino = $line.Destino
         $date = Get-Date
         if( (Test-Path "${origen}")){
             if( -not (Test-Path "${destino}")){
                 New-Item -Path "${destino}" -ItemType Directory -Force | Out-Null    
             }
             Move-Item "${origen}" "${destino}" -Force
-            $output = "${destino},$date"
-            add-Content log_salida.csv $output 
+            $reg = @{
+                        archivo = "${destino}"
+                        fecha = "$date"
+                      }
+            $output = New-Object PSObject -Property $reg
+            $output | export-csv -Path "$salida" -NoTypeInformation -Append 
             $cant_movimientos++;
         }else{
             echo "No existe el archivo ${origen}"
@@ -59,12 +75,12 @@ foreach($line in Get-Content "${archivo_entrada}"){
 
 if($cant_movimientos -gt 1){
    echo "Se añadieron ${cant_movimientos} movimientos al log :"
-   echo "log_salida.csv"    
+   echo "$salida"    
 }
 
 
 if($cant_movimientos -eq 1){
    echo "Se añadio ${cant_movimientos} movimiento al log :"
-   echo "log_salida.csv"    
+   echo "$salida"    
 }
 
